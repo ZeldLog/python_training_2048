@@ -1,5 +1,3 @@
-from model.structure import *
-from view.affichage_textuelle import affichage_textuelle
 from controller.action import *
 import random
 

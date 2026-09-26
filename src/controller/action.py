@@ -1,6 +1,22 @@
 import random
 from model.structure import *
 from view.affichage_textuelle import *
+import sys
+import tty
+import termios
+
+def getch():
+    import sys
+    import tty
+    import termios
+
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+        tty.setraw(fd)
+        return sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
 def initialiser_plateau():
     """
@@ -9,13 +25,7 @@ def initialiser_plateau():
     """
     board = Board(4, 4)
     for _ in range(2):
-        x = random.randint(0, 3)
-        y = random.randint(0, 3)
-        piece = random.choice([2, 4])
-        try:
-            board.place_piece(piece, x, y)
-        except ValueError:
-            pass  # Ignore les positions hors limites
+        ajouter_piece_aleatoire(board)
     return board
 
 def ajouter_piece_aleatoire(board):
@@ -28,6 +38,7 @@ def ajouter_piece_aleatoire(board):
         x, y = random.choice(empty_positions)
         piece = random.choice([2, 4])
         board.place_piece(piece, x, y)
+        board.add_score(piece)  # Ajouter le score de la pièce placée
    
    
 def deplacer_haut(board):
@@ -42,7 +53,6 @@ def deplacer_haut(board):
         for x in range(board.width):
             piece = board.get_piece(x, y)
             if piece > 0:
-                print(f"Déplacement de la pièce {piece} en position ({x}, {y}) vers le haut.")
                 board.remove_piece(x, y)
                 while y > 0 and board.get_piece(x, y - 1) == 0:
                     y -= 1
@@ -111,7 +121,7 @@ def deplacer_droite(board):
             else:
                 board.place_piece(piece, x, y)
 
-def deplacer_pieces(board, direction):
+def deplacer_pieces_by_text(board, direction):
     """
     Déplace les pièces sur le plateau de jeu dans la direction spécifiée.
     :param board: Le plateau de jeu.
@@ -129,6 +139,25 @@ def deplacer_pieces(board, direction):
         deplacer_droite(board)
     else:
         raise ValueError("Direction invalide. Utilisez 'up', 'down', 'left' ou 'right'.")
+
+def deplacer_touch(board, key):
+    """
+    Déplace les pièces sur le plateau de jeu en fonction de la touche pressée.
+    :param board: Le plateau de jeu.
+    :param key: La touche pressée ('w', 's', 'a', 'd').
+    """
+    # Implémentation du déplacement des pièces selon la touche pressée
+    # Cette fonction doit être complétée pour gérer le déplacement et la fusion des pièces
+    if key == 'z':
+        deplacer_haut(board)
+    elif key == 's':
+        deplacer_bas(board)
+    elif key == 'q':
+        deplacer_gauche(board)
+    elif key == 'd':
+        deplacer_droite(board)
+    else:
+        raise ValueError("Touche invalide. Utilisez 'z', 's', 'q' ou 'd'.")
     
 def game_loop():
         """
@@ -136,12 +165,14 @@ def game_loop():
         """
         board = initialiser_plateau()
         while True:
-            affichage_textuelle(board)
-            direction = input("Entrez la direction (up, down, left, right) ou 'exit' pour quitter : ")
-            if direction == 'exit':
+            affichage_textuelle_plateau(board)
+            affichage_textuelle_score(board)
+            move = getch()
+            if move == 'e':
+                print("Merci d'avoir joué !")
                 break
             try:
-                deplacer_pieces(board, direction)
+                deplacer_touch(board, move)
                 ajouter_piece_aleatoire(board)
             except ValueError as e:
                 print(e)
