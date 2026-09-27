@@ -1,6 +1,4 @@
 from controller.action import *
-import random
-
 
 def main():
     game_loop()

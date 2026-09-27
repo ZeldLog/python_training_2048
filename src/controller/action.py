@@ -157,22 +157,58 @@ def deplacer_touch(board, key):
     elif key == 'd':
         deplacer_droite(board)
     else:
-        raise ValueError("Touche invalide. Utilisez 'z', 's', 'q' ou 'd'.")
+        raise ValueError("Touche invalide. Utilisez 'h' pour voir les instructions d'utilisation.")
     
+
+def game_is_over(board):
+    """
+    Vérifie si le jeu est terminé (aucun mouvement possible) ou 2048 est atteint.
+    :param board: Le plateau de jeu.
+    :return: True si le jeu est terminé, False sinon.
+    """
+    # Implémentation de la vérification de fin de jeu
+    # Cette fonction doit être complétée pour vérifier si aucun mouvement n'est possible
+    if board.is_full():
+        for y in range(board.height):
+            for x in range(board.width):
+                piece = board.get_piece(x, y)
+                if piece == 2048:
+                    return True  # Le joueur a gagné
+                # Vérifier les pièces adjacentes pour voir si une fusion est possible
+                if (x < board.width - 1 and board.get_piece(x + 1, y) == piece) or \
+                   (y < board.height - 1 and board.get_piece(x, y + 1) == piece):
+                    return False  # Une fusion est possible
+        return True  # Aucun mouvement possible, le jeu est terminé
+
 def game_loop():
         """
         Boucle principale du jeu.
         """
-        board = initialiser_plateau()
-        while True:
-            affichage_textuelle_plateau(board)
-            affichage_textuelle_score(board)
-            move = getch()
-            if move == 'e':
-                print("Merci d'avoir joué !")
-                break
-            try:
-                deplacer_touch(board, move)
-                ajouter_piece_aleatoire(board)
-            except ValueError as e:
-                print(e)
+        restart = True
+        usage()  # Affiche les instructions d'utilisation du jeu
+        while restart:
+            restart = False
+            board = initialiser_plateau()   
+            while not game_is_over(board):
+                affichage_textuelle_plateau(board)
+                affichage_textuelle_score(board)
+                move = getch()
+                if move == 'e':
+                    print("Merci d'avoir joué !")
+                    break
+                if move == 'r':
+                    restart = True
+                    break
+                if move == 'h':
+                    usage()
+                    continue
+                try:
+                    deplacer_touch(board, move)
+                    ajouter_piece_aleatoire(board)
+                except ValueError as e:
+                    print(e)
+            print("Game Over! Votre score final est :", board.score)
+            if not restart and input("Voulez-vous rejouer ? (o/n) : ").lower() == 'o':
+                restart = True
+            if restart:
+                print("Redémarrage du jeu...")

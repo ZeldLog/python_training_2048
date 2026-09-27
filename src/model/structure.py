@@ -7,6 +7,9 @@ class Board:
         
     def empty_positions(self,x,y):
         return self.grid[y][x] == 0
+    
+    def is_full(self):
+        return all(cell != 0 for row in self.grid for cell in row)
 
     def place_piece(self, piece, x, y):
         if 0 <= x < self.width and 0 <= y < self.height:

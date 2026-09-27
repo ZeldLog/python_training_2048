@@ -18,3 +18,16 @@ def affichage_textuelle_score(board):
     print(f"Score actuel : {board.score}")
     print("--------------------------------")
     
+def usage():
+    """
+    Affiche les instructions d'utilisation du jeu.
+    """
+    print("--------------------------------")
+    print("Instructions d'utilisation :")
+    print("    - Pour afficher les instructions d'utilisation, appuyez sur 'h'.")
+    print("    - Utilisez z, s, q, d pour déplacer les pièces.")
+    print("    - Appuyez sur 'e' pour quitter le jeu.")
+    print("    - Appuyez sur 'r' pour recommencer le jeu.")
+    print("--------------------------------")
+    
+    
