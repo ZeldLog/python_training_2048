@@ -1,6 +1,7 @@
 import random
-from model.structure import *
-from view.affichage_textuelle import *
+from model.Board import Board
+from model.Score import Score
+from view.affichage_textuelle import affichage_textuelle_plateau, affichage_textuelle_score, usage, affichage_textuelle_high_scores
 import sys
 import tty
 import termios
@@ -18,27 +19,28 @@ def getch():
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
-def initialiser_plateau():
+def initialiser_plateau(score):
     """
     Initialise le plateau de jeu avec deux pièces aléatoires.
     :return: Le plateau de jeu initialisé.
     """
     board = Board(4, 4)
     for _ in range(2):
-        ajouter_piece_aleatoire(board)
+        ajouter_piece_aleatoire(board,score)
     return board
 
-def ajouter_piece_aleatoire(board):
+def ajouter_piece_aleatoire(board, score):
     """
     Ajoute une pièce aléatoire (2 ou 4) sur le plateau de jeu.
     :param board: Le plateau de jeu.
+    :param score: L'instance de la classe Score pour suivre le score.
     """
     empty_positions = [(x, y) for x in range(board.width) for y in range(board.height) if board.get_piece(x, y) == 0]
     if empty_positions:
         x, y = random.choice(empty_positions)
         piece = random.choice([2, 4])
         board.place_piece(piece, x, y)
-        board.add_score(piece)  # Ajouter le score de la pièce placée
+        score.add_points(piece)  # Ajouter le score de la pièce placée
    
    
 def deplacer_haut(board):
@@ -184,14 +186,16 @@ def game_loop():
         """
         Boucle principale du jeu.
         """
+        score = Score()  # Crée une instance de la classe Score pour suivre le score
         restart = True
         usage()  # Affiche les instructions d'utilisation du jeu
         while restart:
+            score.reset_score()  # Réinitialise le score à chaque redémarrage
             restart = False
-            board = initialiser_plateau()   
+            board = initialiser_plateau(score)   
             while not game_is_over(board):
                 affichage_textuelle_plateau(board)
-                affichage_textuelle_score(board)
+                affichage_textuelle_score(score)
                 move = getch()
                 if move == 'e':
                     print("Merci d'avoir joué !")
@@ -204,10 +208,12 @@ def game_loop():
                     continue
                 try:
                     deplacer_touch(board, move)
-                    ajouter_piece_aleatoire(board)
+                    ajouter_piece_aleatoire(board, score)
                 except ValueError as e:
                     print(e)
-            print("Game Over! Votre score final est :", board.score)
+                    
+            score.insert_high_score()
+            affichage_textuelle_high_scores(score)
             if not restart and input("Voulez-vous rejouer ? (o/n) : ").lower() == 'o':
                 restart = True
             if restart:

@@ -1,10 +1,15 @@
 class Board:
     def __init__(self, width, height):
-        self.score = 0
         self.width = width
         self.height = height
         self.grid = [[0 for _ in range(width)] for _ in range(height)]
         
+    def __str__(self):
+        result = '\n'
+        for row in self.grid:
+            result += ' '.join(str(cell) for cell in row) + '\n'
+        return result
+    
     def empty_positions(self,x,y):
         return self.grid[y][x] == 0
     
@@ -29,5 +34,3 @@ class Board:
         else:
             raise ValueError("Position out of bounds")
         
-    def add_score(self, points):
-        self.score += points

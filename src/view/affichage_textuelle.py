@@ -5,19 +5,27 @@ def affichage_textuelle_plateau(board):
     Affiche le plateau de jeu sous forme textuelle.
     :param board: Le plateau de jeu à afficher.
     """
-    for row in board.grid:
-        print(' '.join(str(cell) for cell in row))
+    print(board)
         
-def affichage_textuelle_score(board):
+def affichage_textuelle_score(score):
     """
     Affiche le score actuel du plateau de jeu.
-    :param board: Le plateau de jeu dont le score est affiché.
+    :param score: L'instance de la classe Score pour suivre le score.
     """
     
     print("--------------------------------")
-    print(f"Score actuel : {board.score}")
+    print(f"Score actuel : {score.get_score()}")
     print("--------------------------------")
     
+def affichage_textuelle_high_scores(score):
+    """
+    Affiche les 10 meilleurs scores.
+    :param score: L'instance de la classe Score pour suivre le score.
+    """
+    print("--------------------------------")
+    print(score)
+    print("--------------------------------")
+
 def usage():
     """
     Affiche les instructions d'utilisation du jeu.
