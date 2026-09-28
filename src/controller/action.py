@@ -2,6 +2,7 @@ import random
 from model.Board import Board
 from model.Score import Score
 from view.affichage_textuelle import affichage_textuelle_plateau, affichage_textuelle_score, usage, affichage_textuelle_high_scores
+import pandas as pd
 import sys
 import tty
 import termios
@@ -181,12 +182,34 @@ def game_is_over(board):
                    (y < board.height - 1 and board.get_piece(x, y + 1) == piece):
                     return False  # Une fusion est possible
         return True  # Aucun mouvement possible, le jeu est terminé
+    
+    
+def save_high_scores(score):
+    """
+    Sauvegarde les meilleurs scores dans un fichier CSV.
+    :param score: L'instance de la classe Score pour suivre le score.
+    """
+    df = pd.DataFrame(score.high_score, columns=["Nom", "Score"])
+    df = df[df["Nom"] != ""] # Filtrer les scores vides
+    df.to_csv(score.file_path, index=False)
+    
+def load_high_scores(score):
+    """
+    Charge les meilleurs scores depuis un fichier CSV.
+    :param score: L'instance de la classe Score pour suivre le score.
+    """
+    try:
+        df = pd.read_csv(score.file_path)
+        score.high_score = list(df.itertuples(index=False, name=None))
+    except FileNotFoundError:
+        score.high_score = [("", 0)] * 10  # Si le fichier n'existe pas, initialise avec des scores vides
 
 def game_loop():
         """
         Boucle principale du jeu.
         """
         score = Score()  # Crée une instance de la classe Score pour suivre le score
+        load_high_scores(score)  # Charge les meilleurs scores depuis le fichier CSV
         restart = True
         usage()  # Affiche les instructions d'utilisation du jeu
         while restart:
@@ -218,3 +241,5 @@ def game_loop():
                 restart = True
             if restart:
                 print("Redémarrage du jeu...")
+                
+        save_high_scores(score)  # Sauvegarde les meilleurs scores dans le fichier CSV à la fin du jeu
