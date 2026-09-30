@@ -1,3 +1,0 @@
-Nom,Score
-Logan,294
-Logan,6
