@@ -1,7 +1,7 @@
 import random
 from model.Board import Board
 from model.Score import Score
-from view.affichage_textuelle import affichage_textuelle_plateau, affichage_textuelle_score, usage, affichage_textuelle_high_scores
+from view.GameViewText import affichage_textuelle_plateau, affichage_textuelle_score, usage, affichage_textuelle_high_scores
 import sys
 import tty
 import termios
